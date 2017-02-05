@@ -219,9 +219,11 @@ body {
 
 @media screen and (max-width: 500px) {
 	body {
-		padding: 5px;
+		padding: 0;
+		padding-top: 5px;
 	}
 	.coordCell {
 		display: none;
 	}
+
 }
