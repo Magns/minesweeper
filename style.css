@@ -192,8 +192,8 @@ body {
 #popup {
 	position: absolute;
 	top: 40%;
-	left: -2px;
-	width: calc(100% + 4px);
+	left: 6px;
+	width: calc(100% - 12px);
 	padding: 10px;
 	text-align: center;
 	border-radius: 6px;
