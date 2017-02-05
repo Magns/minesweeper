@@ -5,25 +5,23 @@ var Game = function(level) {
 	this.active = true;
 
 	map = new Map({
-		board: document.getElementById('board'), 
+		board: document.getElementById('board'),
 		width: level.width,
 		height: level.height,
         mines: level.mines
 	});
-    
+
 	hideNew();
 };
 Game.prototype.over = function() {
 	this.active = false;
-	
+
 	var board = document.getElementById('board');
 	var popup = document.createElement('div');
 	popup.id = "popup";
 	popup.className = "gameover"
 	popup.innerHTML = "Game over";
 	board.insertBefore(popup, board.firstChild);
-	
-	ga('send', 'event', 'Minesweeper', 'Lose');
 };
 Game.prototype.win = function() {
 	this.active = false;
@@ -34,10 +32,18 @@ Game.prototype.win = function() {
 	popup.className = "success"
 	popup.innerHTML = "Congratulations!";
 	board.insertBefore(popup, board.firstChild);
-	
-	ga('send', 'event', 'Minesweeper', 'Win');
 };
 
+
+/*
+						-- UI --
+*/
+
+// Hide "new game" menu
+function hideNew() {
+	document.getElementById('dropdown1').className = "dropdown hidden";
+	document.getElementById('btn-new').className = "menubutton";
+}
 
 
 /*
@@ -50,7 +56,7 @@ var Map = function (options) {
 	this.tileSize = options.tileSize || 25;
     this.mines = options.mines || 5;
     this.map = [];
-    
+
     // Create empty board
     for (var i=0; i<this.width*this.height; i++) {
 	   this.map.push(new Tile({
@@ -59,7 +65,7 @@ var Map = function (options) {
 		  y: 		Math.floor(i/this.width)
 	   }));
     }
-    
+
     // Sprinkle in mines
     if (this.mines <= this.map.length) {
         for (var i=0; i<this.mines; i++) {
@@ -71,11 +77,11 @@ var Map = function (options) {
                     mined = true;
                 }
             }
-        }    
+        }
     } else {
         console.log("Too many mines!");
     }
-    
+
 	this.board.style.width = this.width * this.tileSize + 'px';
 	this.build(this.board);
 };
@@ -85,9 +91,9 @@ Map.prototype.getTile = function (x, y) {
 	if(typeof y === "undefined") {
 		return this.map[x];
 	}
-	
+
 	// Else return from coordinates
-	if(x >= this.width || x<0 
+	if(x >= this.width || x<0
 	|| (x+y*this.width) >= this.map.length || y<0) {
 		return -1;
 	}
@@ -112,7 +118,7 @@ Map.prototype.build = function () {
 			tile.className = 'tile';
 			tile.id = 'tile-'+x+'-'+y;
 			row.appendChild(tile);
-			
+
 			var tileObj = this.getTile(x,y);
 			(function (that) {
 				tile.addEventListener("click", function() {
@@ -122,7 +128,7 @@ Map.prototype.build = function () {
 		}
 		this.board.appendChild(row);
 	}
-	
+
 	// Very last row
 	var row = document.createElement('div');
 	row.className = 'row';
@@ -135,7 +141,7 @@ Map.prototype.build = function () {
 		row.appendChild(coordCell);
 	}
 	this.board.appendChild(row);
-	
+
 	for(var i=0; i<this.map.length; i++) {
 		var t = this.getTile(i);
 		t.dom = document.getElementById('tile-'+t.x+'-'+t.y);
@@ -179,7 +185,7 @@ Tile.prototype.reveal = function() {
 	this.hidden = false;
 	var near = this.nearby();
 	this.dom.className = "tile revealed";
-	
+
 	// if 0, check all nearby
 	if (near == 0) {
 		for(var y=-1; y<=1; y++) {
@@ -191,14 +197,14 @@ Tile.prototype.reveal = function() {
 			}
 		}
 	}
-	
+
 	// No text for 0 nearby mines
 	if(near != 0) {
 		this.dom.innerText = near;
 	} else {
 		this.dom.innerText = '';
 	}
-	
+
 	// OOPS! Mine!
 	if(this.mine) {
 		for (var i=0; i<map.map.length; i++) {
@@ -210,7 +216,7 @@ Tile.prototype.reveal = function() {
 		}
 		game.over();
 	}
-    
+
     // Did I win!?
     if(map.progress() === 0) {
         game.win();
@@ -249,12 +255,10 @@ Tile.prototype.nearby = function() {
 */
 
 var btn_new = document.getElementById('btn-new');
-    var btn_easy = document.getElementById('btn-easy');
-    var btn_mid = document.getElementById('btn-mid');
-    var btn_hard = document.getElementById('btn-hard');
-
+var btn_easy = document.getElementById('btn-easy');
+var btn_mid = document.getElementById('btn-mid');
+var btn_hard = document.getElementById('btn-hard');
 var btn_flag = document.getElementById('flag');
-
 
 btn_new.addEventListener('click', function() {
 	document.getElementById('dropdown1').classList.toggle("hidden");
@@ -263,17 +267,14 @@ btn_new.addEventListener('click', function() {
 
 btn_easy.addEventListener('click', function() {
     game = new Game(level_easy);
-	ga('send', 'event', 'Minesweeper', 'New game', 'Easy');
 });
 
 btn_mid.addEventListener('click', function() {
     game = new Game(level_mid);
-	ga('send', 'event', 'Minesweeper', 'New game', 'Medium');
 });
 
 btn_hard.addEventListener('click', function() {
     game = new Game(level_hard);
-	ga('send', 'event', 'Minesweeper', 'New game', 'Hard');
 });
 
 btn_flag.addEventListener('click', function() {
@@ -290,7 +291,7 @@ document.addEventListener('keydown', function(e) {
 
 document.addEventListener('keyup', function(e) {
 	// SHIFT key
-    if(e.keyCode == 16) {  
+    if(e.keyCode == 16) {
 		toggleFlag(false);
 	}
 });
@@ -318,36 +319,24 @@ function toggleFlag(bool) {
 }
 
 
-
-/*
-						-- Blablabla --
-*/
-
-function hideNew() {
-	document.getElementById('dropdown1').className = "dropdown hidden";
-	document.getElementById('btn-new').className = "menubutton";
-}
-
-
-
 /*
                         -- init --
 */
 
 var level_easy = {
-    width: 9,
+  width: 9,
 	height: 9,
 	mines: 8
 };
 
 var level_mid = {
-    width: 12,
+  width: 12,
 	height: 12,
 	mines: 20
 };
 
 var level_hard = {
-    width: 16,
+  width: 16,
 	height: 12,
 	mines: 30
 };
@@ -356,5 +345,3 @@ var map;
 var game;
 
 game = new Game(level_easy);
-
-ga('send', 'event', 'Minesweeper', 'Init');
